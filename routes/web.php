@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BukuController;
+use App\Http\Controllers\Auth\LoginRegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,16 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::controller(LoginRegisterController::class)->group(function() {
+    Route::get('/register', 'register')->name('register');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/login', 'login')->name('login');
+    Route::post('/authenticate', 'authenticate')->name('authenticate');
+    Route::get('/dashboard', 'dashboard')->name('dashboard');
+    Route::post('/logout', 'logout')->name('logout');
+   });
+   
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,3 +45,4 @@ Route::delete('/buku/{id}', [BukuController::class, 'destroy'])->name('destroy')
 Route::get('/buku/{id}/edit', [BukuController::class, 'edit'])->name('edit');
 Route::post('/buku/{id}', [BukuController::class, 'update'])->name('update');
 Route::get('/buku/search',[BukuController::class, 'search'])->name('search');
+
