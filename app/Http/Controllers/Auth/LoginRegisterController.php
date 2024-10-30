@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Buku;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -125,5 +126,19 @@ class LoginRegisterController extends Controller
         return redirect()->route('login')
             ->withSuccess('You have logged out successfully!');;
     }    
+    public function index()
+    {
+        
+        $batas = 5;
+        $jumlah_buku = Buku::count();
+        $data_buku = Buku::orderBy('id', 'asc')->paginate($batas);
+        $no = $batas * ($data_buku->currentPage() - 1);
 
+
+        $totalbuku = Buku::all()->count();
+
+        $totalharga = Buku::all()->sum('harga');
+
+        return view('auth.dashboard', compact('data_buku', 'totalharga', 'totalbuku', 'jumlah_buku', 'no'));
+    }
 }

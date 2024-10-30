@@ -12,6 +12,7 @@ class BukuController extends Controller
      */
     public function index()
     {
+        
         $batas = 5;
         $jumlah_buku = Buku::count();
         $data_buku = Buku::orderBy('id', 'asc')->paginate($batas);
@@ -22,7 +23,7 @@ class BukuController extends Controller
 
         $totalharga = Buku::all()->sum('harga');
 
-        return view('index', compact('data_buku', 'totalharga', 'totalbuku', 'jumlah_buku', 'no'));
+        return view('auth.dashboard', compact('data_buku', 'totalharga', 'totalbuku', 'jumlah_buku', 'no'));
     }
 
 
@@ -30,8 +31,8 @@ class BukuController extends Controller
     {
         $batas = 5;
         $cari = $request->kata;
-        $data_buku = Buku::where('judul', 'like', "%".$cari."%")->orwhere('penulis', 'like', "%".$cari."%")
-        ->paginate($batas);
+        $data_buku = Buku::where('judul', 'like', "%" . $cari . "%")->orwhere('penulis', 'like', "%" . $cari . "%")
+            ->paginate($batas);
         $jumlah_buku = $data_buku->count();
         $no = $batas * ($data_buku->currentPage() - 1);
 
@@ -50,7 +51,7 @@ class BukuController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'judul'         => 'required|string',
             'penulis'       => 'required|string|max:30',
             'harga'         => 'required|numeric',
@@ -100,7 +101,7 @@ class BukuController extends Controller
         $buku->harga = $request->harga;
         $buku->tgl_terbit = $request->tgl_terbit;
         $buku->save();
-        return redirect('/buku')->with('pesan','Data Buku Berhasil di Simpan');
+        return redirect('/buku')->with('pesan', 'Data Buku Berhasil di Simpan');
     }
 
     /**
