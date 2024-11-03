@@ -1,3 +1,5 @@
+
+
 @extends('auth.layouts')
 
 @section('content')
@@ -6,7 +8,9 @@
     @if(Session::has('pesan'))
     <div class="alert alert-success">{{Session::get('pesan')}}</div>
     @endif
+    @if(Auth::check() && Auth::user()->role == 'admin')
     <a href="{{ route('create') }}" class="btn btn-primary float-end">Tambah Buku</a>
+    @endif
     <form action="{{ route('search') }}" method="get">@csrf
         <input type="text" name="kata" class="form-control" placeholder="Cari ..." style="width: 30%;
         display: inline; margin-top: 10px; margin-bottom: 10px; float: right;">
@@ -19,7 +23,9 @@
                 <th>Penulis</th>
                 <th>Harga</th>
                 <th>Tanggal Terbit</th>
+                @if(Auth::check() && Auth::user()->role == 'admin')
                 <th>Aksi</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -31,6 +37,7 @@
                 <td>{{ "Rp. ".number_format($buku->harga, 2, ',', '.') }}</td>
                 <td>{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('d/m/Y') }}</td>
                 <td>
+                    @if(Auth::check() && Auth::user()->role == 'admin')
                     <div class="row">
                         <div class="col-md-3">
                             <a class="btn btn-primary" href="{{ route('edit', $buku->id) }}">Edit</a>
@@ -44,6 +51,7 @@
                             </form>
                         </div>
                     </div>
+                    @endif
                 </td>
             </tr>
             @endforeach
