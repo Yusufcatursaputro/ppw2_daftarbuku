@@ -27,6 +27,13 @@
             <div>Tanggal Terbit <input type="date" id="tgl_terbit" name="tgl_terbit"
                     class="date form-control" placeholder="yyyy/mm/dd"></div>
             <br>
+            <div>
+                <label for="gambar" class="form-label">Gambar</label>
+                <input type="file" name="gambar"
+                    class="form-control" required>
+            </div>
+
+            <br>
             <button type="submit" class="btn btn-primary">Simpan</button>
             <a href="{{ url('/buku') }}" class="btn btn-secondary">Kembali</a>
         </form>

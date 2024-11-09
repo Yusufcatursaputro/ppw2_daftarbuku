@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Buku;
+use App\Models\Gallery;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class BukuController extends Controller
 {
@@ -16,7 +19,7 @@ class BukuController extends Controller
      */
     public function index()
     {
-        
+
         $batas = 5;
         $jumlah_buku = Buku::count();
         $data_buku = Buku::orderBy('id', 'asc')->paginate($batas);
@@ -67,6 +70,8 @@ class BukuController extends Controller
         $buku->harga = $request->harga;
         $buku->tgl_terbit = $request->tgl_terbit;
         $buku->save();
+
+
         return redirect('/buku')->with('pesan', 'Data buku berhasil ditambah');
     }
 
@@ -93,19 +98,46 @@ class BukuController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         $buku = Buku::findOrFail($id);
 
         $request->validate([
-            'judul' => 'required|string|max:255',
+            'thumbnail' => 'image|mimes:jpeg,jpg,png|max:2048'
         ]);
-        $buku->judul = $request->input('judul');
-        $buku->penulis = $request->penulis;
-        $buku->harga = $request->harga;
-        $buku->tgl_terbit = $request->tgl_terbit;
-        $buku->save();
-        return redirect('/buku')->with('pesan', 'Data Buku Berhasil di Simpan');
+
+        $filename = time() . '_' . $request->thumbnail->getClientOriginalName();
+        $filepath = $request->file('thumbnail')->storeAs('uploads', $filename, 'public');
+
+        Image::make(storage_path() . '/app/public/uploads/' . $filename)
+            ->fit(240, 320)
+            ->save();
+
+        $buku->update([
+            'judul'     => $request->judul,
+            'penulis'   => $request->penulis,
+            'harga'     => $request->harga,
+            'tgl_terbit' => $request->tgl_terbit,
+            'filename'  => $filename,
+            'filepath'  => '/storage/' . $filepath
+        ]);
+
+
+        if ($request->file('gallery')) {
+            foreach ($request->file('gallery') as $key => $file) {
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('uploads', $fileName, 'public');
+
+                $gallery = Gallery::create([
+                    'nama_galeri'   => $fileName,
+                    'path'          => '/storage/' . $filePath,
+                    'foto'          => $fileName,
+                    'buku_id'       => $id
+                ]);
+            }
+        }
+
+        return redirect('/buku')->with('pesan', 'Perubahan Data Buku Berhasil di Simpan');
     }
 
     /**
@@ -114,5 +146,13 @@ class BukuController extends Controller
     public function show(string $id)
     {
         //
+    }
+
+    public function deleteGalleryImage(String $id)
+    {
+       $foto = Gallery::where('id', '=', $id)->first()->foto;
+       Storage::delete($foto);
+
+        return redirect('/buku')->with('pesan', 'Gambar galeri berhasil dihapus');
     }
 }
