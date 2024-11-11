@@ -148,10 +148,18 @@ class BukuController extends Controller
         //
     }
 
-    public function deleteGalleryImage(String $id)
+    public function deleteGalleryImage(string $bukuId, string $galleryId)
     {
-       $foto = Gallery::where('id', '=', $id)->first()->foto;
-       Storage::delete($foto);
+        // Temukan data gambar galeri yang sesuai dengan buku
+        $gallery = Gallery::where('buku_id', $bukuId)->findOrFail($galleryId);
+
+        // Hapus gambar dari penyimpanan
+        if ($gallery->path && Storage::exists('public/' . $gallery->path)) {
+            Storage::delete('public/' . $gallery->path);
+        }
+
+        // Hapus data galeri dari database
+        $gallery->delete();
 
         return redirect('/buku')->with('pesan', 'Gambar galeri berhasil dihapus');
     }

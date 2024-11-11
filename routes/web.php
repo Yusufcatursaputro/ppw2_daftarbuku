@@ -47,4 +47,4 @@ Route::get('/buku/{id}/edit', [BukuController::class, 'edit'])->name('edit');
 Route::post('/buku/{id}', [BukuController::class, 'update'])->name('update');
 Route::get('/buku/search',[BukuController::class, 'search'])->name('search');
 
-Route::delete('/gallery/{id}', [BukuController::class, 'deleteGalleryImage'])->name('deleteGalleryImage');
+Route::delete('/buku/{buku}/gallery/{gallery}', [BukuController::class, 'deleteGalleryImage'])->name('deleteGalleryImage');

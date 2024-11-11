@@ -23,45 +23,37 @@
                 <input type="file" name="thumbnail"
                     class="form-control" required>
             </div>
-            <!--  -->
-            <div class="col-span-full mt-5">
-                <label for="gallery" class="block text-sm font-medium leading-6 text-gray-900">Gallery</label>
-                <div class="mt-2" id="fileinput_wrapper">
-                </div>
-                <button class="btn btn-primary">
-                    <a id="tambah" onclick="addFileInput()">Tambah Input data</a>
-                </button>
 
-                <script type="text/javascript">
-                    function addFileInput() {
-                        var div = document.getElementById('fileinput_wrapper');
-                        div.innerHTML += '<input type="file" name="gallery[]" id="gallery" class="block w-full mb-5" style="margin-bottom:5px;">';
-                    };
-                </script>
-
-                <div class="gallery_items">
-                    @foreach($buku->galleries()->get() as $gallery)
-                    <div class="galery_item">
-                        <img
-                            class="rounded-full object-cover object-center"
-                            src="{{ asset($gallery->path) }}"
-                            alt=""
-                            width="400" />
-                        <form action="{{ route('deleteGalleryImage', [$gallery->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Hapus Gambar</button>
-                        </form>
-                    </div>
-                    @endforeach
-                </div>
+            <!-- Tambahkan Galeri -->
+            <label for="gallery" class="block text-sm font-medium leading-6 text-gray-900">Gallery</label>
+            <div class="mt-2" id="fileinput_wrapper">
+                <!-- Area untuk input file galeri tambahan -->
             </div>
+            <button type="button" class="btn btn-primary mt-2" onclick="addFileInput()">Tambah Input Data</button>
 
-            <br>
+
+            <br><br>
             <button type="submit" class="btn btn-success">Simpan</button>
             <a href="{{ url('/buku') }}" class="btn btn-secondary">Kembali</a>
         </form>
+
+        <!-- Daftar Gambar Galeri yang Sudah Ada -->
+        <div class="gallery_items mt-4">
+            <h5>Galeri Gambar</h5>
+            @foreach($buku->galleries as $gallery)
+            <div class="galery_item mb-3">
+                <img class="rounded object-cover object-center" src="{{ asset($gallery->path) }}" alt="" width="200">
+                <!-- Form Hapus Gambar Galeri -->
+                <form action="{{ route('`deleteGalleryImage', [$buku->id, $gallery->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Hapus Gambar</button>
+                </form>
+            </div>
+            @endforeach
+        </div>
     </div>
+
 
     <script type="text/datepicker">
         $('.date').datepicker({
@@ -71,6 +63,12 @@
     </script>
     <script type="text/javascript"
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        function addFileInput() {
+            var div = document.getElementById('fileinput_wrapper');
+            div.innerHTML += '<input type="file" name="gallery[]" class="block w-full mb-2 form-control">';
+        }
+    </script>
 
 
 </body>
