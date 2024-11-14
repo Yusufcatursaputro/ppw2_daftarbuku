@@ -44,7 +44,7 @@
             <div class="galery_item mb-3">
                 <img class="rounded object-cover object-center" src="{{ asset($gallery->path) }}" alt="" width="200">
                 <!-- Form Hapus Gambar Galeri -->
-                <form action="{{ route('`deleteGalleryImage', [$buku->id, $gallery->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
+                <form action="{{ route('deleteGalleryImage', [$buku->id, $gallery->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gambar ini?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">Hapus Gambar</button>
