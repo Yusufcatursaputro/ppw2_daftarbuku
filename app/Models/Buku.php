@@ -12,11 +12,16 @@ class Buku extends Model
 
     protected $table = 'books';
     protected $dates = ['tgl_terbit'];
+    protected $casts = [
+        'tgl_terbit' => 'date:Y-m-d',
+    ];
     protected $fillable = [
         'id',
         'judul',
         'penulis',
         'harga',
+        'created_at',
+        'updated_at',
         'tgl_terbit',
         'filename',
         'filepath'

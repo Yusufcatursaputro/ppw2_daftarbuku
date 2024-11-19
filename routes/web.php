@@ -48,3 +48,7 @@ Route::post('/buku/{id}', [BukuController::class, 'update'])->name('update');
 Route::get('/buku/search',[BukuController::class, 'search'])->name('search');
 
 Route::delete('/buku/{buku}/gallery/{gallery}', [BukuController::class, 'deleteGalleryImage'])->name('deleteGalleryImage');
+
+Route::get('/api-consumer', function () {
+    return view('api');
+});
