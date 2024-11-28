@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Buku;
 use App\Models\Gallery;
+use App\Models\Review;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -143,10 +144,15 @@ class BukuController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        // Ambil review berdasarkan ID
+        $review = Review::with('buku', 'user')->findOrFail($id);
+
+        // Kirim review ke view
+        return view('reviews.show', compact('review'));
     }
+
 
     public function deleteGalleryImage(string $bukuId, string $galleryId)
     {

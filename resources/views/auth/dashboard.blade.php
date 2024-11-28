@@ -76,4 +76,8 @@
     <p>Total harga untuk semua buku: {{ "Rp. ".number_format($totalharga, 2, ',', '.') }}</p>
 </div>
 
+<div>
+    <a href="{{ route('reviews.create') }}" class="btn btn-primary">Tambah Review</a>
+</div>
+
 @endsection
