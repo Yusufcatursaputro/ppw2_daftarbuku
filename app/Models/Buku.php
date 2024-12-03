@@ -24,11 +24,21 @@ class Buku extends Model
         'updated_at',
         'tgl_terbit',
         'filename',
-        'filepath'
+        'filepath',
+        'is_editorial_pick',
+        'diskon',
     ];
 
     public function galleries(): HasMany
     {
         return $this->hasMany(Gallery::class, 'buku_id');
+    }
+
+    public function hargaSetelahDiskon()
+    {
+        if ($this->diskon) {
+            return $this->harga - ($this->harga * ($this->diskon / 100));
+        }
+        return $this->harga;
     }
 }

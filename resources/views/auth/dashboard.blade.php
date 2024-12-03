@@ -7,19 +7,20 @@
 <div class="alert alert-success">{{Session::get('pesan')}}</div>
 @endif
 @if(Auth::check() && Auth::user()->role == 'admin')
-<a href="{{ route('create') }}" class="btn btn-primary float-end">Tambah Buku</a>
+<a href="{{ route('create') }}" class="btn btn-primary float-end ms-3">Tambah Buku</a>
 @endif
 <form action="{{ route('search') }}" method="get">@csrf
-    <input type="text" name="kata" class="form-control" placeholder="Cari ..." style="width: 30%;
-        display: inline; margin-top: 10px; margin-bottom: 10px; float: right;">
+    <input type="text" name="kata" class="form-control" placeholder="Cari ..." style="width: 30%; display: inline; float: right;">
 </form>
 <table class="table table-stripped">
     <thead>
         <tr>
             <th>Thumbnail</th>
-            <th>Judul Buku</th>
+            <th class="w-10">Judul Buku</th>
             <th>Penulis</th>
             <th>Harga</th>
+            <th>Diskon</th>
+            <th>Harga Baru</th>
             <th>Tanggal Terbit</th>
             @if(Auth::check() && Auth::user()->role == 'admin')
             <th>Aksi</th>
@@ -31,7 +32,7 @@
         <tr>
             <td>
                 @if ( $buku->filepath )
-                <div class="relative h-10 w-10">
+                <div class="relative">
                     <img
                         class="h-full w-full rounded-full object-cover object-center"
                         src="{{ asset($buku->filepath) }}"
@@ -41,12 +42,20 @@
             </td>
             <td>{{ $buku->judul }}</td>
             <td>{{ $buku->penulis }}</td>
-            <td>{{ "Rp. ".number_format($buku->harga, 2, ',', '.') }}</td>
+            <td class="text-danger text-decoration-line-through">
+                {{ "Rp. ".number_format($buku->harga, 2, ',', '.') }}
+            </td>
+            <td class="badge text-bg-success text-wrap my-2">
+                {{ $buku->diskon ? $buku->diskon . '%' : '0%' }}
+            </td>
+            <td class="text-success">
+                Rp. {{ number_format($buku->hargaSetelahDiskon(), 2, ',', '.') }}
+            </td>
             <td>{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('d/m/Y') }}</td>
             <td>
                 @if(Auth::check() && Auth::user()->role == 'admin')
                 <div class="row">
-                    <div class="col-md-3 me-1">
+                    <div class="col-md-3 me-2">
                         <a class="btn btn-primary" href="{{ route('edit', $buku->id) }}">Edit</a>
                     </div>
                     <div class="col-md-3">
@@ -66,6 +75,14 @@
 </table>
 
 <div>{{ $data_buku->links('pagination::bootstrap-5') }}</div>
+
+<h2>Editorial Picks</h2>
+<ul>
+    @foreach($editorialPicks as $buku)
+    <li>{{ $buku->judul }}</li>
+    @endforeach
+</ul>
+
 <div><strong>Jumlah Buku: {{ $jumlah_buku }}</strong></div>
 
 <div>

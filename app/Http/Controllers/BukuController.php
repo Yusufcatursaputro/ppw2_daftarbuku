@@ -31,7 +31,9 @@ class BukuController extends Controller
 
         $totalharga = Buku::all()->sum('harga');
 
-        return view('auth.dashboard', compact('data_buku', 'totalharga', 'totalbuku', 'jumlah_buku', 'no'));
+        $editorialPicks = Buku::where('is_editorial_pick', true)->take(5)->get();
+
+        return view('auth.dashboard', compact('data_buku', 'totalharga', 'totalbuku', 'jumlah_buku', 'no', 'editorialPicks'));
     }
 
 
@@ -63,13 +65,15 @@ class BukuController extends Controller
             'judul'         => 'required|string',
             'penulis'       => 'required|string|max:30',
             'harga'         => 'required|numeric',
-            'tgl_terbit'    => 'required|date'
+            'tgl_terbit'    => 'required|date',
+            'diskon'        => 'nullable|numeric|min:0|max:100',
         ]);
         $buku = new Buku();
         $buku->judul = $request->judul;
         $buku->penulis = $request->penulis;
         $buku->harga = $request->harga;
         $buku->tgl_terbit = $request->tgl_terbit;
+        $buku->diskon = $request->diskon;
         $buku->save();
 
 
@@ -104,7 +108,9 @@ class BukuController extends Controller
         $buku = Buku::findOrFail($id);
 
         $request->validate([
-            'thumbnail' => 'image|mimes:jpeg,jpg,png|max:2048'
+            'thumbnail' => 'image|mimes:jpeg,jpg,png|max:2048',
+            'gallery.*' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'diskon'    => 'nullable|numeric|min:0|max:100',
         ]);
 
         $filename = time() . '_' . $request->thumbnail->getClientOriginalName();
@@ -118,23 +124,29 @@ class BukuController extends Controller
             'judul'     => $request->judul,
             'penulis'   => $request->penulis,
             'harga'     => $request->harga,
+            'diskon'    => $request->diskon,
             'tgl_terbit' => $request->tgl_terbit,
             'filename'  => $filename,
-            'filepath'  => '/storage/' . $filepath
+            'filepath'  => '/storage/' . $filepath,
+            'is_editorial_pick' => $request->has('is_editorial_pick')
         ]);
 
 
         if ($request->file('gallery')) {
             foreach ($request->file('gallery') as $key => $file) {
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('uploads', $fileName, 'public');
+                if ($file) {
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $filePath = $file->storeAs('uploads', $fileName, 'public');
+                    $keterangan = $request->input('keterangan')[$key] ?? null;
 
-                $gallery = Gallery::create([
-                    'nama_galeri'   => $fileName,
-                    'path'          => '/storage/' . $filePath,
-                    'foto'          => $fileName,
-                    'buku_id'       => $id
-                ]);
+                    $gallery = Gallery::create([
+                        'nama_galeri'   => $fileName,
+                        'path'          => '/storage/' . $filePath,
+                        'foto'          => $fileName,
+                        'buku_id'       => $id,
+                        'keterangan'    => $keterangan
+                    ]);
+                }
             }
         }
 
